@@ -1,0 +1,32 @@
+name: Monitor Legislativo MX
+
+on:
+  # Para correrlo diario a las 9:30 am (Ciudad de México), descomenta:
+  # schedule:
+  #   - cron: '30 15 * * *'
+  workflow_dispatch:          # ejecución manual desde GitHub
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run monitor
+        env:
+          OPENAI_API_KEY:      ${{ secrets.OPENAI_API_KEY }}
+          GMAIL_ACCOUNT:       ${{ secrets.GMAIL_ACCOUNT }}
+          GMAIL_PASS:          ${{ secrets.GMAIL_PASS }}
+          SHEET_ID:            ${{ secrets.SHEET_ID }}
+          GOOGLE_CREDENTIALS:  ${{ secrets.GOOGLE_CREDENTIALS }}
+          DESTINATARIOS:       ${{ secrets.DESTINATARIOS }}
+        run: python monitor.py
